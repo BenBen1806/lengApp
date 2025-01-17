@@ -58,5 +58,5 @@ public class FlashcardUtils {
             Log.e(TAG, "Error writing to file", e);
         }
     }
-    //lol
+
 }
