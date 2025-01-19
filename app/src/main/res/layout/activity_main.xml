@@ -4,51 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="center"
-    android:forceDarkAllowed="false">
+    android:padding="16dp">
 
-    <!-- TextView to display the current word -->
-    <TextView
-        android:id="@+id/wordTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textColor="@android:color/black"
-        android:layout_marginBottom="32dp"
-        android:text="Flashcard Word"
-        android:gravity="center" />
-
-    <!-- Button to play the sound -->
-    <Button
-        android:id="@+id/playSoundButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play Sound"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Button to show the translation -->
-    <Button
-        android:id="@+id/translationButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show Translation"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Button to navigate to the next flashcard -->
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Next"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Button to save the flashcards to a JSON file -->
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save Flashcards"
-        android:layout_marginBottom="16dp" />
-
+    <ListView
+        android:id="@+id/listViewButtons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp" />
 </LinearLayout>

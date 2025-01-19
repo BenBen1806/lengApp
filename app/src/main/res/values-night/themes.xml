@@ -4,4 +4,7 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+
+    <color name="purple_500">#673AB7</color>
+    <color name="purple_700">#AC89EF</color>
 </resources>

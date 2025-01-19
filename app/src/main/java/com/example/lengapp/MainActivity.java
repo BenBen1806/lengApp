@@ -1,34 +1,50 @@
 package com.example.lengapp;
 
-import android.media.MediaPlayer;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.view.View;
+import android.widget.*;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<Flashcard> flashcards;
-    private int currentFlashcardIndex = 0;
-    private MediaPlayer mediaPlayer;
+    private ListView listViewButtons;
+    private List<String> buttonLabels;
+    private ArrayAdapter<String> adapter;
 
-    private TextView wordTextView;
-    private Button playSoundButton, saveButton, nextButton, translationButton;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_list_view, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle menu item clicks
+        showInputDialog(this);
+        return super.onOptionsItemSelected(item);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,151 +54,69 @@ public class MainActivity extends AppCompatActivity {
         //disableing ''dark mode''
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-        // Initialize views
-        wordTextView = findViewById(R.id.wordTextView);
-        playSoundButton = findViewById(R.id.playSoundButton);
-        saveButton = findViewById(R.id.saveButton);
-        nextButton = findViewById(R.id.nextButton);
-        translationButton = findViewById(R.id.translationButton);
+        listViewButtons = findViewById(R.id.listViewButtons);
 
-        // Load flashcards from JSON
-        flashcards = loadFlashcardsFromJson();
+        // Example list of button labels
+        buttonLabels = new ArrayList<>();
 
-        // Display the first flashcard
-        displayFlashcard();
 
-        // Play sound button logic
-        playSoundButton.setOnClickListener(new View.OnClickListener() {
+        // Create an ArrayAdapter to display buttons
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, buttonLabels);
+        listViewButtons.setAdapter(adapter);
+
+        // Set onClick listener for each button in the ListView
+        listViewButtons.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                //playSound();
-            }
-        });
-
-        // Next button logic
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showNextFlashcard();
-            }
-        });
-
-        // Translation button logic
-        translationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTranslation();
-            }
-        });
-
-        // Save button logic
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveFlashcards();
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String lengName = buttonLabels.get(position);
+                Intent intent = new Intent(MainActivity.this, OptionScreenActivity.class);
+                intent.putExtra(OptionScreenActivity.FILENAME_KEY, lengName);
+                startActivity(intent);
             }
         });
     }
 
-    /**
-     * Load flashcards from JSON stored in the assets folder.
-     */
-    private List<Flashcard> loadFlashcardsFromJson() {
-        List<Flashcard> flashcardList = new ArrayList<>();
-        try {
-            InputStream inputStream = getAssets().open("flashcards.json");
-            int size = inputStream.available();
-            byte[] buffer = new byte[size];
-            inputStream.read(buffer);
-            inputStream.close();
 
-            String json = new String(buffer, StandardCharsets.UTF_8);
-            JSONArray jsonArray = new JSONArray(json);
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject flashcardObject = jsonArray.getJSONObject(i);
-                String word = flashcardObject.getString("word");
-                String translation = flashcardObject.getString("translation");
-                String soundFileName = flashcardObject.getString("soundFileName");
-
-                flashcardList.add(new Flashcard(word, translation, soundFileName));
-            }
-        } catch (IOException | JSONException e) {
-            Log.e("MainActivity", "Error loading flashcards from JSON", e);
-        }
-        return flashcardList;
-    }
-
-    /**
-     * Display the current flashcard on the screen.
-     */
-    private void displayFlashcard() {
-        if (flashcards.isEmpty()) {
-            wordTextView.setText("No flashcards available");
-            return;
-        }
-        Flashcard currentFlashcard = flashcards.get(currentFlashcardIndex);
-        wordTextView.setText(currentFlashcard.getWord());
-    }
-
-    /**
-     * Show the next flashcard in the list.
-     */
-    private void showNextFlashcard() {
-        if (flashcards.isEmpty()) return;
-
-        currentFlashcardIndex = (currentFlashcardIndex + 1) % flashcards.size();
-        displayFlashcard();
-    }
-
-    /**
-     * Show the translation of the current flashcard.
-     */
-    private void showTranslation() {
-        if (flashcards.isEmpty()) return;
-
-        Flashcard currentFlashcard = flashcards.get(currentFlashcardIndex);
-        Toast.makeText(this, currentFlashcard.getTranslation(), Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Play the sound for the current flashcard.
-     */
-    private void playSound() {
-        if (flashcards.isEmpty()) return;
-
-        Flashcard currentFlashcard = flashcards.get(currentFlashcardIndex);
-        int soundResourceId = getResources().getIdentifier(
-                currentFlashcard.getSoundFileName(), "raw", getPackageName()
-        );
-
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-        }
-
-        mediaPlayer = MediaPlayer.create(this, soundResourceId);
-        if (mediaPlayer != null) {
-            mediaPlayer.start();
-        } else {
-            Toast.makeText(this, "Sound file not found", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    /**
-     * Save the list of flashcards to a JSON file.
-     */
-    private void saveFlashcards() {
-        FlashcardUtils.saveFlashcardsToJson(this, flashcards, "flashcards.json");
-    }
 
     @Override
-    protected void onDestroy() {
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+        buttonLabels.clear();
+        List<String> filesNames = FlashcardUtils.getJsonFileNamesFromResources(this);
+        buttonLabels.addAll(filesNames);
+        adapter.notifyDataSetChanged();
     }
 
+    public void showInputDialog(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        LinearLayout layout = new LinearLayout(context);
+        EditText input = new EditText(context);
+        Button button = new Button(context);
+
+        // Set up the input field
+        input.setHint("Enter a lenguege");
+        layout.addView(input);
+
+        // Set up the button
+        button.setText("Submit");
+        layout.addView(button);
+
+        // Add the layout to the dialog
+        builder.setView(layout);
+        builder.setTitle("Enter a new language");
+
+        // Set up the button click listener
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = input.getText().toString();
+                // Do something with the text
+                System.out.println("Text entered: " + text);
+            }
+        });
+
+        // Show the dialog
+        builder.show();
+    }
 
 }

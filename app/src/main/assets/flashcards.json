@@ -2,16 +2,36 @@
   {
     "word": "دائماً",
     "translation": "תמיד",
-    "soundFileName": "daman"
+    "soundFileName": "none"
   },
   {
     "word": "كتاب",
     "translation": "ספר",
-    "soundFileName": "sefer"
+    "soundFileName": "none"
   },
   {
     "word": "كلب",
     "translation": "כלב",
-    "soundFileName": "kelev"
+    "soundFileName": "none"
+  },
+  {
+    "word": "قمر",
+    "translation": "ירח",
+    "soundFileName": "none"
+  },
+  {
+    "word": "بيت",
+    "translation": "בית",
+    "soundFileName": "none"
+  },
+  {
+    "word": "حلم",
+    "translation": "חלום",
+    "soundFileName": "none"
+  },
+  {
+    "word": "شغل",
+    "translation": "עבודה",
+    "soundFileName": "none"
   }
 ]
